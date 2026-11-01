@@ -1,0 +1,47 @@
+name: Container
+
+on:
+  push:
+    branches: [main]
+    tags: ["v*"]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: container-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  build:
+    uses: docker/github-builder/.github/workflows/build.yml@v1
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+    with:
+      file: Containerfile
+      output: image
+      platforms: linux/amd64,linux/arm64
+      push: ${{ github.event_name != 'pull_request' && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')) }}
+      cache: true
+      cache-mode: max
+      sbom: true
+      set-meta-labels: true
+      set-meta-annotations: true
+      meta-images: ghcr.io/${{ github.repository }}
+      meta-flavor: latest=false
+      meta-tags: |
+        type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' }}
+        type=ref,event=branch
+        type=ref,event=pr
+        type=semver,pattern={{version}}
+        type=semver,pattern={{major}}.{{minor}}
+        type=sha
+    secrets:
+      registry-auths: |
+        - registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}

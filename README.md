@@ -39,6 +39,16 @@ The gateway listens on `http://127.0.0.1:8080` by default. For local development
 
 ### Run in a container
 
+Pull the published image for Linux AMD64 or ARM64:
+
+```sh
+docker run --rm -p 127.0.0.1:8080:8080 ghcr.io/shyim/opencode-go-gateway:latest
+```
+
+The [container workflow](.github/workflows/container.yml) uses [Docker's GitHub Builder](https://github.com/docker/github-builder) to build both architectures, generate an SBOM, and sign provenance attestations. Pushes to `main` publish `latest`, `main`, and `sha-<commit>` tags. Version tags such as `v1.2.3` publish `1.2.3`, `1.2`, and a commit tag. Pull requests build without publishing. Publishing uses the built-in `GITHUB_TOKEN`; no registry secrets are required.
+
+To build locally:
+
 ```sh
 docker build -f Containerfile -t opencode-go-gateway .
 docker run --rm -p 127.0.0.1:8080:8080 opencode-go-gateway

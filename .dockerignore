@@ -1,0 +1,6 @@
+*
+!Containerfile
+!go.mod
+!go.sum
+!*.go
+*_test.go

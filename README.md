@@ -37,6 +37,23 @@ go build -o opencode-go-gateway .
 
 The gateway listens on `http://127.0.0.1:8080` by default. For local development, you can also run `go run .`.
 
+### Run in a container
+
+```sh
+docker build -f Containerfile -t opencode-go-gateway .
+docker run --rm -p 127.0.0.1:8080:8080 opencode-go-gateway
+```
+
+The multi-stage build produces a static binary and runs it as a non-root user in a [distroless](https://github.com/GoogleContainerTools/distroless) image. The image listens on `0.0.0.0:8080` inside the container; the command above publishes it on the host's loopback address. Pass configuration with `-e` and append gateway flags after the image name:
+
+```sh
+docker run --rm -p 127.0.0.1:8080:8080 \
+  -e GATEWAY_API_KEY -e OPENCODE_API_KEY \
+  opencode-go-gateway -timeout 5m
+```
+
+The runtime image includes CA certificates for outbound HTTPS and has no shell or package manager.
+
 ### Discover models
 
 ```sh

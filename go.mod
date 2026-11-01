@@ -1,4 +1,4 @@
-module opencode-go-gateway
+module github.com/shyim/opencode-go-gateway
 
 go 1.24
 

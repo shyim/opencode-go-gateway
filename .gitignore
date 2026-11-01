@@ -1,0 +1,8 @@
+# Local build output
+/opencode-go-gateway
+
+# Local agent tooling
+/.agents/
+/.claude/
+/agent/
+/skills-lock.json
